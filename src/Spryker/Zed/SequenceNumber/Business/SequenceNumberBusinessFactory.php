@@ -20,7 +20,7 @@ use Propel\Runtime\Propel;
  * @method SequenceNumberConfig getConfig()
  * @method SequenceNumberQueryContainerInterface getQueryContainer()
  */
-class SequenceNumberDependencyContainer extends AbstractBusinessFactory
+class SequenceNumberBusinessFactory extends AbstractBusinessFactory
 {
 
     /**
