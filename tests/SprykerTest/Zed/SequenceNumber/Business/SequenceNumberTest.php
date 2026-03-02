@@ -32,9 +32,6 @@ class SequenceNumberTest extends Unit
      */
     protected $sequenceNumberFacade;
 
-    /**
-     * @return void
-     */
     public function setUp(): void
     {
         parent::setUp();
@@ -42,9 +39,6 @@ class SequenceNumberTest extends Unit
         $this->sequenceNumberFacade = new SequenceNumberFacade();
     }
 
-    /**
-     * @return void
-     */
     public function testGetDefaultSettingsMergedWithCustomSettings(): void
     {
         $customSettings = new SequenceNumberSettingsTransfer();
@@ -58,9 +52,6 @@ class SequenceNumberTest extends Unit
         $this->assertSame(0, $sequenceNumberSettings->getOffset());
     }
 
-    /**
-     * @return void
-     */
     public function testGenerate(): void
     {
         $config = $this->generateConfig();
@@ -81,9 +72,6 @@ class SequenceNumberTest extends Unit
         $this->assertSame('101', $number);
     }
 
-    /**
-     * @return void
-     */
     public function testGenerateWithPrefix(): void
     {
         $config = $this->generateConfig();
@@ -94,9 +82,6 @@ class SequenceNumberTest extends Unit
         $this->assertSame('DE1', $sequenceNumber);
     }
 
-    /**
-     * @return void
-     */
     public function testGenerateOnSequenceNumber(): void
     {
         $generator = $this->generateGenerator();
@@ -133,9 +118,6 @@ class SequenceNumberTest extends Unit
         $this->assertSame('012', $number);
     }
 
-    /**
-     * @return \Spryker\Zed\SequenceNumber\SequenceNumberConfig
-     */
     protected function generateConfig(): SequenceNumberConfig
     {
         $config = new SequenceNumberConfig();
@@ -143,12 +125,6 @@ class SequenceNumberTest extends Unit
         return $config;
     }
 
-    /**
-     * @param int $min
-     * @param int $max
-     *
-     * @return \Spryker\Zed\SequenceNumber\Business\Generator\RandomNumberGenerator
-     */
     protected function generateGenerator(int $min = 1, int $max = 1): RandomNumberGenerator
     {
         return new RandomNumberGenerator(
