@@ -89,8 +89,13 @@ class SequenceNumber implements SequenceNumberInterface
                 return $this->createNumberTransaction();
             });
         } catch (Exception $e) {
+            // The original exception is chained, not just quoted into the message: callers
+            // classify retryable database conditions (a lock conflict, a snapshot conflict) by
+            // walking getPrevious() down to the PDOException and reading its driver error code.
             throw new InvalidSequenceNumberException(
                 'Could not generate sequence number. Make sure your settings are complete. Error: ' . $e->getMessage(),
+                (int)$e->getCode(),
+                $e,
             );
         }
 

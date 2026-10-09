@@ -8,8 +8,10 @@
 namespace SprykerTest\Zed\SequenceNumber\Business;
 
 use Codeception\Test\Unit;
+use Exception;
 use Generated\Shared\Transfer\SequenceNumberSettingsTransfer;
 use Propel\Runtime\Propel;
+use Spryker\Zed\SequenceNumber\Business\Exception\InvalidSequenceNumberException;
 use Spryker\Zed\SequenceNumber\Business\Generator\RandomNumberGenerator;
 use Spryker\Zed\SequenceNumber\Business\Model\SequenceNumber;
 use Spryker\Zed\SequenceNumber\Business\SequenceNumberFacade;
@@ -116,6 +118,41 @@ class SequenceNumberTest extends Unit
 
         $number = $sequenceNumber->generate();
         $this->assertSame('012', $number);
+    }
+
+    public function testGenerateKeepsTheUnderlyingExceptionAsPrevious(): void
+    {
+        // Arrange
+        $sequenceNumberSettings = $this->generateConfig()->getDefaultSettings();
+        $sequenceNumberSettings->setName('LimitedSequence');
+        $sequenceNumber = new SequenceNumber(
+            $this->generateGenerator(),
+            $sequenceNumberSettings,
+            Propel::getConnection(),
+            // A limit of 0 is exceeded by the very first generated number, so the transaction
+            // fails with a known exception that createNumber() has to wrap without losing.
+            ['LimitedSequence' => 0],
+        );
+
+        // Act
+        $previousException = null;
+
+        try {
+            $sequenceNumber->generate();
+        } catch (InvalidSequenceNumberException $invalidSequenceNumberException) {
+            $previousException = $invalidSequenceNumberException->getPrevious();
+        }
+
+        // Assert
+        $this->assertInstanceOf(
+            Exception::class,
+            $previousException,
+            'Expected the original exception to be chained so callers can inspect its driver error code.',
+        );
+        $this->assertSame(
+            'The sequence limit is reached for LimitedSequence',
+            $previousException->getMessage(),
+        );
     }
 
     protected function generateConfig(): SequenceNumberConfig
